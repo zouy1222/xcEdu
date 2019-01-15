@@ -2,7 +2,9 @@ package com.xuecheng.manage_cms.service;
 
 import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
+import com.xuecheng.framework.domain.cms.response.CmsCode;
 import com.xuecheng.framework.domain.cms.response.CmsPageResult;
+import com.xuecheng.framework.exception.ExceptionCast;
 import com.xuecheng.framework.model.response.CommonCode;
 import com.xuecheng.framework.model.response.QueryResponseResult;
 import com.xuecheng.framework.model.response.QueryResult;
@@ -70,6 +72,8 @@ public class PageService {
             if(cmsPage1==null){
                 cmsPage = cmsPageRepository.save(cmsPage);
                 return new CmsPageResult(CommonCode.SUCCESS,cmsPage);
+            }else{
+                ExceptionCast.cast(CmsCode.CMS_ADDPAGE_EXISTSNAME);
             }
         }
 
