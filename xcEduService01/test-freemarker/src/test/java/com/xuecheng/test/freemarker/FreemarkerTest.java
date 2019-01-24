@@ -45,4 +45,5 @@ public class FreemarkerTest {
         IOUtils.copy(inputStream,fileOutputStream);
 
     }
+
 }
