@@ -1,17 +1,25 @@
 package com.xuecheng.manage_course.service;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.xuecheng.framework.domain.course.CourseBase;
 import com.xuecheng.framework.domain.course.Teachplan;
+import com.xuecheng.framework.domain.course.ext.CourseInfo;
 import com.xuecheng.framework.domain.course.ext.TeachplanNode;
+import com.xuecheng.framework.domain.course.request.CourseListRequest;
 import com.xuecheng.framework.exception.ExceptionCast;
 import com.xuecheng.framework.model.response.CommonCode;
+import com.xuecheng.framework.model.response.QueryResponseResult;
+import com.xuecheng.framework.model.response.QueryResult;
 import com.xuecheng.framework.model.response.ResponseResult;
 import com.xuecheng.manage_course.dao.CourseBaseRepository;
+import com.xuecheng.manage_course.dao.CourseMapper;
 import com.xuecheng.manage_course.dao.TeachplanMapper;
 import com.xuecheng.manage_course.dao.TeachplanRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +33,8 @@ public class CourseService {
     private TeachplanRepository teachplanRepository;
     @Autowired
     private CourseBaseRepository courseBaseRepository;
+    @Autowired
+    private CourseMapper courseMapper;
     /**
      * 查询课程计划
      * @param courseId
@@ -102,5 +112,38 @@ public class CourseService {
         }
         //返回根节点的id
         return teachplanList.get(0).getId();
+    }
+
+    /**
+     * 分页查询课程,主要是标题和图片
+     * @param page
+     * @param size
+     * @param courseListRequest
+     * @return
+     */
+    public QueryResponseResult findCourseList(int page,int size,CourseListRequest courseListRequest){
+        if(courseListRequest == null){
+            courseListRequest = new CourseListRequest();
+        }
+        if(page <=0){
+            page = 0;
+        }
+        if(size<=0){
+            size = 10;
+        }
+        //分页插件
+        PageHelper.startPage(page,size);
+        Page<CourseInfo> courseListPage = courseMapper.findCourseListPage(courseListRequest);
+        //总记录数
+        long total = courseListPage.getTotal();
+        //集合
+        List<CourseInfo> list = courseListPage.getResult();
+        //封装结果集
+
+        QueryResult queryResult = new QueryResult();
+        queryResult.setTotal(total);
+        queryResult.setList(list);
+        QueryResponseResult queryResponseResult = new QueryResponseResult(CommonCode.SUCCESS,queryResult);
+        return queryResponseResult;
     }
 }
